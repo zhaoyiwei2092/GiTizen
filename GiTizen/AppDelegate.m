@@ -16,6 +16,25 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+    // Initialize navigation bar throughout the app
+    [[UINavigationBar appearance] setTitleTextAttributes: @{
+                                                           NSForegroundColorAttributeName:
+                                                               [UIColor whiteColor],
+                                                           NSFontAttributeName:
+                                                               [UIFont fontWithName:@"DINAlternate-Bold" size:19.0f],
+                                                           }];
+    [[UINavigationBar appearance] setBarStyle: UIBarStyleBlack];
+    [[UINavigationBar appearance] setTintColor:[UIColor yellowColor]];
+    [[UIBarButtonItem appearance] setTitleTextAttributes: @{
+                                          NSFontAttributeName:
+                                              [UIFont fontWithName:@"DINAlternate-Bold" size:18.0f],
+                                        }
+                              forState:UIControlStateNormal];
+ 
+    
+    
+    
     // Initialize HTTPClient
     NSURL *baseURL = [NSURL URLWithString:@"http://106.185.44.27:8080"];
     AFHTTPClient* client = [[AFHTTPClient alloc] initWithBaseURL:baseURL];

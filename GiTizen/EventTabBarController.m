@@ -30,7 +30,7 @@
     UITabBarItem *postTabBarItem = [tabBar.items objectAtIndex:1];
     UITabBarItem *joinTabBarItem = [tabBar.items objectAtIndex:2];
     
-    centerTabBarItem.title = @"Center";
+    centerTabBarItem.title = @"All Events";
     postTabBarItem.title = @"My Post";
     joinTabBarItem.title = @"My Join";
     

@@ -34,6 +34,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initField];
+    self.navigationItem.title = @"Post New Event";
     UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Post" style:UIBarButtonItemStylePlain target:self action:@selector(postIt)];
     self.navigationItem.rightBarButtonItem = rightButton;
     [self.eventDatePicker addTarget:self action:@selector(datePickerChanged:) forControlEvents:UIControlEventValueChanged];
@@ -72,7 +73,6 @@
 }
 
 -(void)pickerDoneClicked {
-    //NSLog(@"Done Clicked");
     [self.categoryStr resignFirstResponder];
     //self.catPickerToolbar.hidden=YES;
     //self.catPicker.hidden=YES;
@@ -81,7 +81,6 @@
 - (void)initField
 {
     self.types = [NSArray arrayWithObjects:@"Reading", @"Bar", @"Hangout", @"Food", @"Sport", @"Concert", @"Hiking", @"Drama", nil];
-    
     self.eventToPost = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.persistentStoreManagedObjectContext];
     //UIImage *btnImage = [UIImage imageNamed:@"image.png"];
     //[self.searchButton setImage:btnImage forState:UIControlStateNormal];

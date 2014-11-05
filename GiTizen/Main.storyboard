@@ -118,7 +118,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1137" y="-2883"/>
+            <point key="canvasLocation" x="-937" y="-2871"/>
         </scene>
         <!--Event Center Table View Controller-->
         <scene sceneID="RWB-ck-WTj">
@@ -392,7 +392,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kII-0l-ptg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-480" y="-2081"/>
+            <point key="canvasLocation" x="-882" y="-2095"/>
         </scene>
         <!--My Post-->
         <scene sceneID="Fz7-Pw-2Ml">
@@ -533,12 +533,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Category info" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RLV-gJ-vP5">
-                                <rect key="frame" x="395" y="117" width="173" height="24"/>
-                                <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Location info" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bCC-K0-1QX">
                                 <rect key="frame" x="16" y="85" width="568" height="24"/>
                                 <constraints>
@@ -630,7 +624,6 @@
                     <navigationItem key="navigationItem" id="azy-tl-xXS"/>
                     <connections>
                         <outlet property="addrTextView" destination="p4d-kx-A2n" id="vjc-ia-3UA"/>
-                        <outlet property="categoryText" destination="RLV-gJ-vP5" id="Miv-vf-lrF"/>
                         <outlet property="desTextView" destination="LSv-i0-l0O" id="mAl-et-U6o"/>
                         <outlet property="nameText" destination="bCC-K0-1QX" id="VVe-C9-Evv"/>
                         <outlet property="nojText" destination="bN5-5V-dwe" id="eb6-TE-nuw"/>
@@ -663,7 +656,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UHd-dA-1th" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-480" y="-2883"/>
+            <point key="canvasLocation" x="-288" y="-2871"/>
         </scene>
         <!--Joined Events-->
         <scene sceneID="W0J-gd-ms5">
@@ -723,12 +716,6 @@
                                 <rect key="frame" x="16" y="358" width="93" height="21"/>
                                 <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="17"/>
                                 <color key="textColor" red="0.82352948189999997" green="0.74901962280000001" blue="0.180392161" alpha="1" colorSpace="deviceRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Category info" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uSa-17-aWx">
-                                <rect key="frame" x="372" y="131" width="201" height="21"/>
-                                <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Time info" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HcS-Ay-lvQ">
@@ -801,14 +788,12 @@
                             <constraint firstItem="O0A-3t-GMq" firstAttribute="leading" secondItem="wbt-Xr-HZ0" secondAttribute="leadingMargin" id="ayu-cr-INo"/>
                             <constraint firstItem="HcS-Ay-lvQ" firstAttribute="leading" secondItem="edQ-nV-jDP" secondAttribute="trailing" constant="38" id="nd6-z3-aZU"/>
                             <constraint firstItem="094-Iv-Fra" firstAttribute="leading" secondItem="wbt-Xr-HZ0" secondAttribute="leadingMargin" id="pmf-kV-zcP"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="uSa-17-aWx" secondAttribute="trailing" constant="11" id="qM7-7c-yrb"/>
                             <constraint firstItem="O0A-3t-GMq" firstAttribute="trailing" secondItem="wbt-Xr-HZ0" secondAttribute="trailingMargin" id="qYu-N6-ib7"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="T83-LW-T9x"/>
                     <connections>
                         <outlet property="addrTextView" destination="W7a-tE-fhP" id="9hG-0T-KuF"/>
-                        <outlet property="categoryText" destination="uSa-17-aWx" id="iXN-je-jJP"/>
                         <outlet property="desTextView" destination="oCT-tu-Nkp" id="2em-sB-tE3"/>
                         <outlet property="nameText" destination="O0A-3t-GMq" id="Ie4-tI-LVI"/>
                         <outlet property="nojText" destination="d8X-eD-jFy" id="84E-ou-R9M"/>
@@ -819,7 +804,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="G26-vN-ojk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1992" y="-554"/>
+            <point key="canvasLocation" x="-1976" y="-554"/>
         </scene>
         <!--Update Event View Controller-->
         <scene sceneID="a5E-qN-Wt7">
@@ -1020,8 +1005,8 @@
         <image name="clockicon.png" width="128" height="128"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="j2u-kk-eea"/>
-        <segue reference="YPb-qX-USL"/>
-        <segue reference="njG-QC-pKN"/>
+        <segue reference="Xrg-Lc-AMZ"/>
+        <segue reference="P2Y-tt-RRd"/>
+        <segue reference="8UE-OO-mae"/>
     </inferredMetricsTieBreakers>
 </document>

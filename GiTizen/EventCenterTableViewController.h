@@ -13,6 +13,6 @@
 #import "DetailViewController.h"
 #import "NSString+FontAwesome.h"
 
-@interface EventCenterTableViewController : UITableViewController
+@interface EventCenterTableViewController : UITableViewController<UIPickerViewDelegate,UIToolbarDelegate>
 
 @end

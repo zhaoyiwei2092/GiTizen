@@ -35,6 +35,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self initField];
+    self.navigationItem.title = @"Update Event";
     UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(putEvents)];
     self.navigationItem.rightBarButtonItem = rightButton;
     [self.myEventDatePicker addTarget:self action:@selector(datePickerChanged:) forControlEvents:UIControlEventValueChanged];
@@ -56,9 +57,7 @@
     self.catPickerToolbar.alpha = 0.7;
     [self.catPickerToolbar sizeToFit];
     
-    
     NSMutableArray *barItems = [[NSMutableArray alloc] init];
-    
     
     UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
     
@@ -102,7 +101,6 @@
     [dateFormatter setDateFormat:@"MM-dd-yyyy HH:mm"];
     NSString *strDate = [dateFormatter stringFromDate:datePicker.date];
     self.eventToPut.starttime = strDate;
-    NSLog(@"date: %@", self.eventToPut.starttime);
 }
 
 #pragma mark - Managing the event item to update
@@ -162,6 +160,7 @@
     NSArray* views = self.navigationController.viewControllers;
     [self.navigationController popToViewController: views[views.count-3] animated:YES];
 }
+
 /*
 #pragma mark - Navigation
 
