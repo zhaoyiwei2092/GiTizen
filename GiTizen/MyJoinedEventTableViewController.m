@@ -12,6 +12,8 @@
 
 @property (strong, nonatomic) NSMutableArray *events;
 @property (strong, nonatomic) NSMutableArray *joinedEvents;
+@property (strong, nonatomic) NSMutableArray *p_events;
+@property (strong, nonatomic) NSMutableArray *l_events;
 @property (strong, nonatomic) EventCenterTableViewCell *eventCell;
 
 @end
@@ -26,7 +28,7 @@
     [refreshControl addTarget:self action:@selector(refresh)forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
     
-    self.navigationItem.title = @"My Event";
+    self.navigationItem.title = @"My Joined Events";
     
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(filterEvents)];
     self.navigationItem.leftBarButtonItem = leftButton;
@@ -38,6 +40,8 @@
 {
     self.events = [NSMutableArray new];
     self.joinedEvents = [NSMutableArray new];
+    self.p_events = [NSMutableArray new];
+    self.l_events = [NSMutableArray new];
 }
 
 - (void) filterEvents {
@@ -59,32 +63,36 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return self.events.count;
+    if(section == 0)
+        return self.l_events.count;
+    else
+        return self.p_events.count;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    self.eventCell = [tableView dequeueReusableCellWithIdentifier:@"EventCenterTableViewCell"];// forIndexPath:indexPath];
+    self.eventCell = [tableView dequeueReusableCellWithIdentifier:@"EventCenterTableViewCell"];
     
     self.eventCell = [[[NSBundle mainBundle] loadNibNamed:@"EventCenterTableViewCell" owner:self options:nil] lastObject];
     
-    [self configureCell:self.eventCell atIndexPath:indexPath];
+    if(indexPath.section == 0)
+        [self configureCell:self.l_events atIndexPath:indexPath];
+    
+    if(indexPath.section == 1)
+        [self configureCell:self.p_events atIndexPath:indexPath];
     
     return self.eventCell;
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
+- (void)configureCell:(NSMutableArray*)evts atIndexPath:(NSIndexPath *)indexPath
 {
-    Event *event = self.events[indexPath.row];
-    
-    //self.eventCell.categoryLabel.text = event.category;
-    //id food  = [NSString fontAwesomeIconStringForEnum:FAIconBook];
+    Event *event = evts[indexPath.row];
     
     id icon = [NSString fontAwesomeIconStringForEnum:FAIconBook];
     
@@ -119,7 +127,6 @@
     self.eventCell.tsLabel.text = event.starttime;
     self.eventCell.npLabel.text = event.number_of_peo;
     self.eventCell.njLabel.text = event.number_joined;
-    //NSLog(@"event is: %@",event);
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -131,22 +138,54 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"joinedEventDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        Event *selectedEvent = self.events[indexPath.row];
+        Event *selectedEvent;
+        if(indexPath.section == 0) {
+            selectedEvent = self.l_events[indexPath.row];
+        }
+        else {
+            NSLog(@"p_row: %ld", (long)indexPath.row);
+            selectedEvent = self.p_events[indexPath.row];
+        }
         [[segue destinationViewController] setDetailItem:selectedEvent];
     }
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSString *sectionName;
+    switch (section)
+    {
+        case 0:
+            sectionName = @"Upcoming";
+            break;
+        case 1:
+            sectionName = @"History";
+            break;
+        default:
+            sectionName = @"";
+            break;
+    }
+    return sectionName;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 40.0f;
+}
+
+/*
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
-        //[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-        [self deleteEvents:indexPath];
-        [self.events removeObjectAtIndex:indexPath.row];
-        [tableView reloadData];
+        if (indexPath.section == 0) {
+            [self deleteEvents: self.l_events atIndexPath: indexPath];
+        }
+        else [self deleteEvents: self.p_events atIndexPath: indexPath];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }
 }
+*/
 
 -(void)loadJoinedEvents
 {
@@ -157,10 +196,18 @@
                                            parameters:nil
                                               success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                                                   NSLog(@"successfully load joinedEvents");
-                                                  self.joinedEvents = [NSMutableArray arrayWithArray: mappingResult.array];
+                                                  self.joinedEvents = mappingResult.array;
                                                   [self.events removeAllObjects];
+                                                  [self.p_events removeAllObjects];
+                                                  [self.l_events removeAllObjects];
+                                                  int num = 0;
                                                   for(Join* join in self.joinedEvents) {
-                                                      [self loadEvents: join.event_id];
+                                                      if(join.event_id != nil) num++;
+                                                  }
+                                                  for(Join* join in self.joinedEvents) {
+                                                      if(join.event_id != nil) {
+                                                          [self loadEvents: join.event_id inTotalNum: num];
+                                                      }
                                                   }
                                               }
                                               failure:^(RKObjectRequestOperation *operation, NSError *error) {
@@ -169,43 +216,46 @@
     
 }
 
--(void)loadEvents: event_id
+-(void)loadEvents: (NSString*)event_id inTotalNum: (int) numOfEvent
 {
     NSString* myPath = [@"/api/events/" stringByAppendingString:event_id];
     [[RKObjectManager sharedManager] getObjectsAtPath:myPath
                                            parameters:nil
                                               success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-                                                  [self.events addObject:mappingResult.firstObject];
+                                                  Event* evt = mappingResult.firstObject;
+                                                  [self.events addObject:evt];
+                                                  int count = [self.events count];
+                                                  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+                                                  dateFormatter.dateFormat = @"MM-dd-yyyy HH:mm";
+                                                  NSDate *now = [NSDate date];
+                                                  NSDate * date = [dateFormatter dateFromString:evt.starttime];
+                                                  if ([date compare:now] <= 0) {
+                                                      [self.p_events addObject:evt];
+                                                  }
+                                                  else [self.l_events addObject:evt];
                                                   NSLog(@"successfully load events");
-                                                  [self.tableView reloadData];
+                                                  //NSLog(@"numofevent: %d, count: %d", numOfEvent, count);
+                                                  if(count>=numOfEvent) {
+                                                      [self.l_events sortUsingComparator:^NSComparisonResult(Event* a, Event* b) {
+                                                          
+                                                          NSDate *date1 = [dateFormatter dateFromString:a.starttime];
+                                                          NSDate *date2 = [dateFormatter dateFromString:b.starttime];
+                                                          
+                                                          return [date1 compare:date2];
+                                                      }];
+                                                      [self.p_events sortUsingComparator:^NSComparisonResult(Event* a, Event* b) {
+                                                          
+                                                          NSDate *date1 = [dateFormatter dateFromString:a.starttime];
+                                                          NSDate *date2 = [dateFormatter dateFromString:b.starttime];
+                                                          
+                                                          return [date2 compare:date1];
+                                                      }];
+                                                      [self.tableView reloadData];
+                                                  }
                                               }
                                               failure:^(RKObjectRequestOperation *operation, NSError *error) {
                                                   NSLog(@"error occurred': %@", error);
                                               }];
-}
-
-- (void)deleteEvents:(NSIndexPath *)indexPath
-{
-    Event *selectedEvent = self.events[indexPath.row];
-    Join *joinedEvent = [NSEntityDescription insertNewObjectForEntityForName:@"Join" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.persistentStoreManagedObjectContext];
-    
-    NSString* userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"userGTID"];
-    joinedEvent.gtid = userid;
-    joinedEvent.event_id = selectedEvent.object_id;
-    [[RKObjectManager sharedManager]  deleteObject:joinedEvent
-                                              path:@"/api/joins"
-                                        parameters:nil
-                                           success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-                                               NSLog(@"joins successfully deleted");
-                                               UIAlertView* quitSuccess = [[UIAlertView alloc] initWithTitle:@"Quit" message:@"you have quited the event" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
-                                               [quitSuccess show];
-                                               [self.navigationController popViewControllerAnimated:YES];
-                                           }
-                                           failure:^(RKObjectRequestOperation *operation, NSError *error) {
-                                               NSLog(@"error occurred': %@", error);
-                                           }];
-    
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

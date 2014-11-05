@@ -11,15 +11,21 @@
 #import "PlacesViewController.h"
 #import <RestKit/RestKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import <QuartzCore/QuartzCore.h>
+
 
 @interface UpdateEventViewController ()
 
 @property (weak, nonatomic) IBOutlet UITextField *categoryStr;
-@property (weak, nonatomic) IBOutlet UITextField *timeStr;
 @property (weak, nonatomic) IBOutlet UITextField *nopStr;
 @property (weak, nonatomic) IBOutlet UITextField *titleStr;
 @property (weak, nonatomic) IBOutlet UITextView *descStr;
 @property (weak, nonatomic) IBOutlet UIButton *searchButton;
+@property (weak, nonatomic) IBOutlet UIDatePicker *myEventDatePicker;
+
+@property (strong, nonatomic) NSArray *types;
+@property (strong, nonatomic) UIPickerView *catPicker;
+@property (strong, nonatomic) UIToolbar *catPickerToolbar;
 
 @end
 
@@ -31,18 +37,72 @@
     [self initField];
     UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithTitle:@"Update" style:UIBarButtonItemStylePlain target:self action:@selector(putEvents)];
     self.navigationItem.rightBarButtonItem = rightButton;
+    [self.myEventDatePicker addTarget:self action:@selector(datePickerChanged:) forControlEvents:UIControlEventValueChanged];
+    [self loadPickerView];
+
+}
+
+-(void) loadPickerView {
+    self.catPicker = [[UIPickerView alloc] initWithFrame:CGRectMake(0, 30, 320, 480)];
+    self.catPicker.backgroundColor = [UIColor clearColor];
+    [self.catPicker setDataSource: self];
+    [self.catPicker setDelegate: self];
+    self.catPicker.showsSelectionIndicator = YES;
+    self.categoryStr.inputView = self.catPicker;
+    
+    self.catPickerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+    self.catPickerToolbar.barStyle = UIBarStyleBlackOpaque;
+    self.catPickerToolbar.tintColor = [UIColor blueColor];
+    self.catPickerToolbar.alpha = 0.7;
+    [self.catPickerToolbar sizeToFit];
+    
+    
+    NSMutableArray *barItems = [[NSMutableArray alloc] init];
+    
+    
+    UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    
+    [barItems addObject:flexSpace];
+    
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(pickerDoneClicked)];
+    
+    [barItems addObject:doneBtn];
+    
+    [self.catPickerToolbar setItems:barItems animated:YES];
+    
+    self.categoryStr.inputAccessoryView = self.catPickerToolbar;
+}
+
+-(void)pickerDoneClicked {
+    //NSLog(@"Done Clicked");
+    [self.categoryStr resignFirstResponder];
 }
 
 - (void)initField
 {
+    self.types = [NSArray arrayWithObjects:@"Reading", @"Bar", @"Hangout", @"Food", @"Sport", @"Concert", @"Hiking", @"Drama", nil];
+    
+    [self.descStr.layer setBorderColor:[[[UIColor grayColor] colorWithAlphaComponent:0.5] CGColor]];
+    [self.descStr.layer setBorderWidth:2.0];
+    self.descStr.layer.cornerRadius = 5;
+    self.descStr.clipsToBounds = YES;
+    
     self.eventToPut = [NSEntityDescription insertNewObjectForEntityForName:@"Event" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.persistentStoreManagedObjectContext];
     self.titleStr.text = self.myEvent.g_loc_name;
     self.categoryStr.text = self.myEvent.category;
-    self.timeStr.text = self.myEvent.starttime;
     self.nopStr.text = self.myEvent.number_of_peo;
     self.descStr.text = self.myEvent.desc;
     
     self.eventToPut = self.myEvent;
+}
+
+- (void)datePickerChanged:(UIDatePicker *)datePicker
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"MM-dd-yyyy HH:mm"];
+    NSString *strDate = [dateFormatter stringFromDate:datePicker.date];
+    self.eventToPut.starttime = strDate;
+    NSLog(@"date: %@", self.eventToPut.starttime);
 }
 
 #pragma mark - Managing the event item to update
@@ -84,7 +144,6 @@
         self.eventToPut.g_loc_lon = self.gPlace.longitude;
     }
     self.eventToPut.category = self.categoryStr.text;
-    self.eventToPut.starttime = self.timeStr.text;
     self.eventToPut.number_of_peo = self.nopStr.text;
     self.eventToPut.desc = self.descStr.text;
     //NSLog(@"eventToPut.category: %@, time: %@, number_of_peo: %@, gtid: %@", self.eventToPut.category, self.eventToPut.starttime, self.eventToPut.number_of_peo, self.eventToPut.gtid);
@@ -112,5 +171,21 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow: (NSInteger)row inComponent: (NSInteger)component {
+    self.categoryStr.text = self.types[row];
+}
+
+-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
+    return 1;
+}
+
+-(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component{
+    return [self.types count];
+    
+}
+-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
+    return [self.types objectAtIndex:row];
+}
 
 @end

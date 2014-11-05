@@ -67,16 +67,35 @@
                                               path:path
                                         parameters:nil
                                            success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-                                               NSLog(@"joins successfully deleted");
-                                               UIAlertView* quitSuccess = [[UIAlertView alloc] initWithTitle:@"Quit" message:@"Successfully quited" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
-                                               [quitSuccess show];
-                                               [self.navigationController popViewControllerAnimated:YES];
+                                               [self decreaseJoinAndUpdateEvent];
                                            }
                                            failure:^(RKObjectRequestOperation *operation, NSError *error) {
                                                NSLog(@"error occurred': %@", error);
                                            }];
 }
 
+-(void)decreaseJoinAndUpdateEvent
+{
+    NSString* myPath = [@"/api/events/" stringByAppendingString:self.detailItem.object_id];
+    
+    [[RKObjectManager sharedManager] getObjectsAtPath:myPath
+                                           parameters:nil
+                                              success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+                                                  Event* event = mappingResult.firstObject;
+                                                  int num = [event.number_joined intValue];
+                                                  NSLog(@"num: %d", num);
+                                                  event.number_joined = [NSString stringWithFormat:@"%ld", (long)(num-1)];
+                                                  NSLog(@"no. of joined: %@", event.number_joined);
+                                                  UIAlertView* quitSuccess = [[UIAlertView alloc] initWithTitle:@"Quit" message:@"Successfully quited" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+                                                  [quitSuccess show];
+                                                  [self.navigationController popViewControllerAnimated:YES];
+                                                  [self putEvent: event];
+                                                  NSLog(@"joins successfully deleted");
+                                              }
+                                              failure:^(RKObjectRequestOperation *operation, NSError *error) {
+                                                  NSLog(@"error occurred': %@", error);
+                                              }];
+}
 
 - (void) joinEvent {
     [self loadJoinedEvents];
@@ -88,6 +107,13 @@
     NSString* userid = [[NSUserDefaults standardUserDefaults] stringForKey:@"userGTID"];
     NSString* myPath = [@"/api/joins/gtid/" stringByAppendingString:userid];
     NSString* object_id = self.detailItem.object_id;
+    
+    if ([userid isEqualToString: self.detailItem.gtid]) {
+        UIAlertView* joinSuccess = [[UIAlertView alloc] initWithTitle:@"Join" message:@"you have already joined this event" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+        [joinSuccess show];
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
     
     [[RKObjectManager sharedManager] getObjectsAtPath:myPath
                                            parameters:nil
@@ -115,6 +141,7 @@
     
 }
 
+
 -(void) postJoin {
     
     Join* joinedEvent = [NSEntityDescription insertNewObjectForEntityForName:@"Join" inManagedObjectContext:[RKObjectManager sharedManager].managedObjectStore.persistentStoreManagedObjectContext];
@@ -128,14 +155,14 @@
                                         parameters:nil
                                            success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
                                                NSLog(@"Joined event post succeeded");
-                                               [self loadandUpdateEvent];
+                                               [self increaseJoinAndUpdateEvent];
                                            }
                                            failure:^(RKObjectRequestOperation *operation, NSError *error) {
                                                NSLog(@"error occurred': %@", error);
                                            }];
 }
 
--(void)loadandUpdateEvent
+-(void)increaseJoinAndUpdateEvent
 {
     NSString* myPath = [@"/api/events/" stringByAppendingString:self.detailItem.object_id];
 
@@ -189,7 +216,7 @@
         self.nopText.text = self.detailItem.number_of_peo;
         self.nojText.text = self.detailItem.number_joined;
         self.addrTextView.text = self.detailItem.g_loc_addr;
-        self.desTextView.text = @"All welcome!!";
+        self.desTextView.text = self.detailItem.desc;
     }
 }
 
